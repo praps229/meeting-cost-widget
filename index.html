@@ -1,310 +1,339 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Meeting cost counter</title>
+  <title>Möteskostnad</title>
 
-  <!-- Optional nice font (safe fallback if it fails to load) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg: #0b1020;
-      --card: rgba(255,255,255,0.08);
-      --card2: rgba(255,255,255,0.06);
-      --border: rgba(255,255,255,0.14);
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.70);
-      --muted2: rgba(255,255,255,0.55);
-      --shadow: 0 18px 40px rgba(0,0,0,0.35);
-      --radius: 20px;
-      --accent: #7c3aed; /* violet */
-      --accent2: #22c55e; /* green */
-      --danger: #ef4444;
+      /* Neutral palette that blends into white/grey admin UIs */
+      --bg: transparent;
+      --card: #ffffff;
+      --card2: #fbfbfc;
+      --border: rgba(20, 20, 24, 0.12);
+      --text: rgba(20, 20, 24, 0.92);
+      --muted: rgba(20, 20, 24, 0.62);
+      --shadow: 0 10px 22px rgba(16, 24, 40, 0.08);
+
+      --accent: #3b82f6;   /* calm blue */
+      --accent2: #111827;  /* near-black */
+      --danger: #b91c1c;
+
+      --radius: 16px;
     }
 
     * { box-sizing: border-box; }
-    body{
-      margin:0;
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(1200px 700px at 20% 10%, rgba(124,58,237,0.38), transparent 60%),
-        radial-gradient(900px 600px at 90% 30%, rgba(34,197,94,0.22), transparent 55%),
-        radial-gradient(900px 700px at 40% 90%, rgba(59,130,246,0.18), transparent 60%),
-        var(--bg);
-      min-height: 100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 28px;
     }
 
-    .wrap{
-      width: min(960px, 100%);
-      display:grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 18px;
+    /* Fixed embed height */
+    .widget {
+      height: 500px;
+      width: 100%;
+      padding: 14px;
     }
 
-    @media (max-width: 860px){
-      .wrap{ grid-template-columns: 1fr; }
-    }
-
-    .card{
+    .card {
+      height: 100%;
+      width: 100%;
       background: linear-gradient(180deg, var(--card), var(--card2));
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      padding: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
-    .title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 12px;
-      margin-bottom: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(20, 20, 24, 0.08);
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(8px);
     }
 
-    .title h1{
-      font-size: 18px;
-      margin:0;
-      font-weight: 700;
+    .title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
       letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .badge{
+    .title .sub {
       font-size: 12px;
       color: var(--muted);
-      border: 1px solid var(--border);
-      padding: 6px 10px;
-      border-radius: 999px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .grid{
-      display:grid;
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(20, 20, 24, 0.14);
+      background: #fff;
+      color: var(--accent2);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chev {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid rgba(20, 20, 24, 0.65);
+      border-bottom: 2px solid rgba(20, 20, 24, 0.65);
+      transform: rotate(45deg);
+      transition: transform 0.18s ease;
+      margin-top: -2px;
+    }
+    .toggle[aria-expanded="true"] .chev {
+      transform: rotate(225deg);
+      margin-top: 2px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr;
+      height: 100%;
+      min-height: 0;
+    }
+
+    /* Counter area */
+    .counter {
+      padding: 18px 16px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 0;
+      gap: 10px;
+    }
+
+    .big {
+      font-size: 56px;
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin: 0;
+      word-break: break-word;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .minirow {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pill {
+      border: 1px solid rgba(20, 20, 24, 0.10);
+      background: rgba(20, 20, 24, 0.03);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      padding: 0 16px 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.04s ease, opacity 0.2s ease;
+    }
+    button:active { transform: translateY(1px); }
+    button[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-start {
+      background: var(--accent);
+      color: #fff;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .btn-pause {
+      background: rgba(20, 20, 24, 0.06);
+      border: 1px solid rgba(20, 20, 24, 0.12);
+      color: var(--accent2);
+      min-width: 120px;
+    }
+
+    .btn-reset {
+      background: rgba(185, 28, 28, 0.07);
+      border: 1px solid rgba(185, 28, 28, 0.20);
+      color: var(--danger);
+      min-width: 120px;
+    }
+
+    /* Collapsible settings */
+    .settings {
+      border-top: 1px solid rgba(20, 20, 24, 0.08);
+      background: #fff;
+      overflow: hidden;
+      transition: max-height 0.22s ease;
+    }
+
+    .settings-inner {
+      padding: 14px 16px 16px;
+      display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-top: 12px;
     }
 
     @media (max-width: 520px){
-      .grid{ grid-template-columns: 1fr; }
+      .big { font-size: 44px; }
+      .settings-inner { grid-template-columns: 1fr; }
     }
 
-    label{
-      display:block;
+    label {
+      display: block;
       font-size: 12px;
       color: var(--muted);
       margin-bottom: 6px;
     }
 
-    input, select{
-      width:100%;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(0,0,0,0.25);
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(20, 20, 24, 0.14);
+      background: #fff;
       color: var(--text);
       outline: none;
       font-size: 14px;
     }
 
     input:focus, select:focus{
-      border-color: rgba(124,58,237,0.6);
-      box-shadow: 0 0 0 4px rgba(124,58,237,0.15);
+      border-color: rgba(59, 130, 246, 0.55);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
     }
 
-    .help{
+    .full { grid-column: 1 / -1; }
+
+    .hint {
       margin-top: 6px;
-      font-size: 12px;
-      color: var(--muted2);
+      font-size: 11px;
+      color: rgba(20, 20, 24, 0.55);
       line-height: 1.35;
     }
-
-    .buttons{
-      display:flex;
-      gap: 10px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-    }
-
-    button{
-      border: 0;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      color: white;
-      transition: transform 0.04s ease, opacity 0.2s ease;
-    }
-    button:active{ transform: translateY(1px); }
-
-    .btn-start{
-      background: linear-gradient(135deg, rgba(124,58,237,1), rgba(34,197,94,0.9));
-      flex: 1;
-      min-width: 160px;
-    }
-    .btn-pause{
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.16);
-      color: var(--text);
-    }
-    .btn-reset{
-      background: rgba(239,68,68,0.18);
-      border: 1px solid rgba(239,68,68,0.30);
-      color: #ffd7d7;
-    }
-    button[disabled]{
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-
-    .big{
-      font-size: 64px;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      margin: 10px 0 2px;
-      line-height: 1.05;
-      word-break: break-word;
-    }
-
-    .sub{
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .statrow{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    .pill{
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.16);
-      border-radius: 999px;
-      padding: 8px 10px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .note{
-      margin-top: 14px;
-      font-size: 12px;
-      color: var(--muted2);
-      line-height: 1.45;
-    }
-
-    .footer{
-      margin-top: 10px;
-      font-size: 11px;
-      color: rgba(255,255,255,0.45);
-    }
-
-    .mono{ font-variant-numeric: tabular-nums; }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <!-- Output -->
+  <div class="widget">
     <div class="card">
-      <div class="title">
-        <h1>Meeting cost counter</h1>
-        <div class="badge">Ticks every 30 seconds</div>
-      </div>
-
-      <div class="sub">Meeting cost so far</div>
-      <div id="cost" class="big mono">0</div>
-
-      <div class="statrow">
-        <div class="pill">Time: <span id="elapsed" class="mono">00:00:00</span></div>
-        <div class="pill">People: <span id="peopleOut" class="mono">—</span></div>
-        <div class="pill">Cost per person/hour: <span id="cphOut" class="mono">—</span></div>
-      </div>
-
-      <div class="note">
-        Tip: Keep the assumptions simple and visible. This is a nudge, not an audit.
-      </div>
-
-      <div class="footer">
-        You can change defaults by editing the “Defaults” section in the script.
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="card">
-      <div class="title">
-        <h1>Settings</h1>
-        <div class="badge">Embeddable</div>
-      </div>
-
-      <div class="grid">
-        <div>
-          <label for="people">Number of people</label>
-          <input id="people" type="number" min="1" step="1" value="8" />
-          <div class="help">How many attendees are in the meeting.</div>
+      <div class="topbar">
+        <div class="title">
+          <h1>Möteskostnad</h1>
+          <div class="sub">Kostnaden tickar var 15:e sekund efter start</div>
         </div>
 
-        <div>
-          <label for="currency">Currency</label>
-          <select id="currency">
-            <option value="SEK" selected>SEK</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="USD">USD</option>
-          </select>
-          <div class="help">Just controls the label shown next to the number.</div>
+        <div id="settingsToggle" class="toggle" role="button" tabindex="0" aria-expanded="true" aria-controls="settingsPanel">
+          Inställningar <span class="chev" aria-hidden="true"></span>
         </div>
+      </div>
 
-        <div style="grid-column: 1 / -1;">
-          <label for="cph">Cost per person per hour (optional override)</label>
-          <input id="cph" type="number" min="0" step="1" placeholder="Leave blank to use the default" />
-          <div class="help">
-            If blank, we use the default below. If filled, we use your override.
+      <div class="content">
+        <div class="counter">
+          <div style="font-size:12px;color:var(--muted);">Kostnad hittills</div>
+          <p id="cost" class="big">0 kr</p>
+
+          <div class="minirow" aria-label="Minimal meeting info">
+            <span class="pill">Tid: <span id="elapsed">00:00:00</span></span>
+            <span class="pill"><span id="peopleOut">8</span> personer</span>
           </div>
         </div>
 
-        <div style="grid-column: 1 / -1;">
-          <label for="defaultCph">Default cost per person per hour</label>
-          <input id="defaultCph" type="number" min="0" step="1" value="650" />
-          <div class="help">
-            Set this once for your organisation (salary + on-costs, optionally overhead).
+        <div class="buttons">
+          <button id="startBtn" class="btn-start">Starta</button>
+          <button id="pauseBtn" class="btn-pause" disabled>Pausa</button>
+          <button id="resetBtn" class="btn-reset" disabled>Nollställ</button>
+        </div>
+
+        <div id="settingsPanel" class="settings">
+          <div class="settings-inner">
+            <div>
+              <label for="people">Antal personer</label>
+              <input id="people" type="number" min="1" step="1" value="8" />
+            </div>
+
+            <div>
+              <label for="currency">Valuta</label>
+              <select id="currency">
+                <option value="SEK" selected>SEK (kr)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="USD">USD ($)</option>
+              </select>
+              <div class="hint">Formateras med svensk sifferstil (tusentalsmellanrum).</div>
+            </div>
+
+            <div class="full">
+              <label for="defaultCph">Standardkostnad per person och timme</label>
+              <input id="defaultCph" type="number" min="0" step="1" value="650" />
+              <div class="hint">Sätt ett rimligt “påslag” här (lön + LKP, ev overhead) så blir det konsekvent.</div>
+            </div>
+
+            <div class="full">
+              <label for="cph">Tillfällig override (valfritt)</label>
+              <input id="cph" type="number" min="0" step="1" placeholder="Lämna tomt för att använda standard" />
+              <div class="hint">Om du fyller i här används den siffran istället för standardkostnaden.</div>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="buttons">
-        <button id="startBtn" class="btn-start">Start</button>
-        <button id="pauseBtn" class="btn-pause" disabled>Pause</button>
-        <button id="resetBtn" class="btn-reset" disabled>Reset</button>
-      </div>
-
-      <div class="note">
-        If you want overhead included, bake it into the default hourly cost. Keep it consistent.
       </div>
     </div>
   </div>
 
 <script>
-  // Defaults (you can change these)
-  const COST_TICK_SECONDS = 30;
-  const TIME_TICK_SECONDS = 1;
+  // Behaviour
+  const COST_TICK_SECONDS = 15; // requested
+  const TIME_TICK_SECONDS = 1;  // keep time smooth
 
   // Elements
   const elCost = document.getElementById("cost");
   const elElapsed = document.getElementById("elapsed");
   const elPeopleOut = document.getElementById("peopleOut");
-  const elCphOut = document.getElementById("cphOut");
 
   const inpPeople = document.getElementById("people");
   const inpCurrency = document.getElementById("currency");
@@ -315,10 +344,13 @@
   const btnPause = document.getElementById("pauseBtn");
   const btnReset = document.getElementById("resetBtn");
 
+  const toggle = document.getElementById("settingsToggle");
+  const panel = document.getElementById("settingsPanel");
+
   // State
   let running = false;
-  let startedAt = null;        // timestamp (ms)
-  let pausedAt = null;         // timestamp (ms)
+  let startedAt = null;   // ms
+  let pausedAt = null;    // ms
   let totalPausedMs = 0;
 
   let timeInterval = null;
@@ -329,11 +361,36 @@
     return Number.isFinite(n) ? n : fallback;
   }
 
-  function formatMoney(amount, currency){
-    const rounded = Math.round(amount);
-    // Use spaces as thousands separator, looks good in an embedded widget
-    const withSpaces = rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    return `${withSpaces} ${currency}`;
+  function getPeople(){
+    const p = safeNumber(inpPeople.value, 1);
+    return Math.max(1, Math.floor(p));
+  }
+
+  function getCurrency(){
+    return inpCurrency.value || "SEK";
+  }
+
+  function getCostPerPersonPerHour(){
+    const override = (inpCph.value || "").trim();
+    if (override !== ""){
+      return Math.max(0, safeNumber(override, 0));
+    }
+    return Math.max(0, safeNumber(inpDefaultCph.value, 0));
+  }
+
+  function moneyFormatter(currency){
+    // Swedish style: space as thousands separator, comma decimals (we show 0 decimals)
+    // SEK gets "kr" in Swedish locale formatting.
+    try{
+      return new Intl.NumberFormat("sv-SE", {
+        style: "currency",
+        currency,
+        maximumFractionDigits: 0
+      });
+    } catch {
+      // Fallback
+      return new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 });
+    }
   }
 
   function pad2(n){ return String(n).padStart(2, "0"); }
@@ -346,56 +403,52 @@
     return `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
   }
 
-  function getPeople(){
-    const p = safeNumber(inpPeople.value, 0);
-    return Math.max(1, Math.floor(p));
-  }
-
-  function getCurrency(){
-    return inpCurrency.value || "SEK";
-  }
-
-  function getCostPerPersonPerHour(){
-    const override = inpCph.value.trim();
-    if (override !== ""){
-      return Math.max(0, safeNumber(override, 0));
-    }
-    return Math.max(0, safeNumber(inpDefaultCph.value, 0));
-  }
-
   function effectiveElapsedMs(nowMs){
     if (!startedAt) return 0;
     return Math.max(0, nowMs - startedAt - totalPausedMs);
   }
 
   function computeCost(nowMs){
+    // Make the cost "tick" in discrete 15-second steps after start.
+    const stepMs = COST_TICK_SECONDS * 1000;
+    const elapsed = effectiveElapsedMs(nowMs);
+    const quantisedMs = Math.floor(elapsed / stepMs) * stepMs;
+
     const people = getPeople();
     const cph = getCostPerPersonPerHour();
-    const hours = effectiveElapsedMs(nowMs) / (1000 * 60 * 60);
+    const hours = quantisedMs / (1000 * 60 * 60);
+
     return people * cph * hours;
   }
 
   function render(){
     const now = Date.now();
-    const currency = getCurrency();
     const people = getPeople();
-    const cph = getCostPerPersonPerHour();
+    const currency = getCurrency();
+    const fmt = moneyFormatter(currency);
 
     elPeopleOut.textContent = people;
-    elCphOut.textContent = formatMoney(cph, currency);
+    elElapsed.textContent = formatElapsed(effectiveElapsedMs(now));
 
-    const elapsedMs = effectiveElapsedMs(now);
-    elElapsed.textContent = formatElapsed(elapsedMs);
-
-    // Only tick the cost every 30 seconds (but we re-render on cost interval)
     const cost = computeCost(now);
-    elCost.textContent = formatMoney(cost, currency);
+
+    // Some currencies (SEK) get nice formatting with "kr" in sv-SE
+    // If Intl fails, it will still produce Swedish grouping for numbers.
+    let out;
+    try{
+      out = fmt.format(cost);
+    } catch {
+      out = `${new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 }).format(cost)} ${currency}`;
+    }
+    elCost.textContent = out;
   }
 
   function setUiState(){
     btnStart.disabled = running;
     btnPause.disabled = !running;
     btnReset.disabled = !startedAt;
+
+    // Allow changing settings only when not running (reduces confusion)
     inpPeople.disabled = running;
     inpCurrency.disabled = running;
     inpCph.disabled = running;
@@ -404,7 +457,6 @@
 
   function start(){
     if (running) return;
-
     const now = Date.now();
 
     if (!startedAt){
@@ -417,13 +469,9 @@
     pausedAt = null;
     running = true;
 
-    // Time updates every second (nice UX)
     timeInterval = setInterval(render, TIME_TICK_SECONDS * 1000);
-
-    // Cost ticks every 30 seconds (as requested)
     costInterval = setInterval(render, COST_TICK_SECONDS * 1000);
 
-    // Render instantly
     render();
     setUiState();
   }
@@ -453,31 +501,56 @@
     timeInterval = null;
     costInterval = null;
 
-    elCost.textContent = "0";
-    elElapsed.textContent = "00:00:00";
-    elPeopleOut.textContent = "—";
-    elCphOut.textContent = "—";
-
+    render();
     setUiState();
   }
+
+  // Collapsible settings (open by default)
+  function setPanel(open){
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open){
+      // Set to the content height for smooth animation
+      panel.style.maxHeight = panel.scrollHeight + "px";
+    } else {
+      panel.style.maxHeight = "0px";
+    }
+  }
+
+  function togglePanel(){
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    setPanel(!isOpen);
+  }
+
+  toggle.addEventListener("click", togglePanel);
+  toggle.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      togglePanel();
+    }
+  });
 
   // Wire up buttons
   btnStart.addEventListener("click", start);
   btnPause.addEventListener("click", pause);
   btnReset.addEventListener("click", reset);
 
-  // Keep outputs synced before starting
+  // Live update when not running
   ["input", "change"].forEach(evt => {
-    inpPeople.addEventListener(evt, () => { if (!running) render(); });
-    inpCurrency.addEventListener(evt, () => { if (!running) render(); });
-    inpCph.addEventListener(evt, () => { if (!running) render(); });
-    inpDefaultCph.addEventListener(evt, () => { if (!running) render(); });
+    [inpPeople, inpCurrency, inpCph, inpDefaultCph].forEach(el => {
+      el.addEventListener(evt, () => { if (!running) render(); });
+    });
   });
 
-  // Initial render
+  // Initial layout + render
   render();
   setUiState();
-</script>
 
+  // Ensure panel height is correct after fonts load/layout settles
+  window.addEventListener("load", () => setPanel(true));
+  window.addEventListener("resize", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    if (isOpen) setPanel(true);
+  });
+</script>
 </body>
 </html>
