@@ -102,6 +102,7 @@ body{
 .buttons{
   padding:0 16px 16px;
   display:flex;
+  justify-content:center;
   gap:10px;
 }
 
@@ -116,7 +117,10 @@ button{
 
 button[disabled]{opacity:.45;cursor:not-allowed}
 
-.btn-start{background:var(--accent);color:#fff;flex:1}
+.btn-start{
+  background:var(--accent);
+  color:#fff;
+  min-width:160px;
 .btn-pause{background:#eee}
 .btn-reset{background:#fdecec;color:var(--danger)}
 
