@@ -1,181 +1,174 @@
 <!doctype html>
 <html lang="sv">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Möteskostnad</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Möteskostnad</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <style>
-    :root{
-      --card: #ffffff;
-      --card2: #fbfbfc;
-      --border: rgba(20, 20, 24, 0.12);
-      --text: rgba(20, 20, 24, 0.92);
-      --muted: rgba(20, 20, 24, 0.62);
-      --shadow: 0 10px 22px rgba(16, 24, 40, 0.08);
+<style>
+:root{
+  --card:#fff;
+  --border:rgba(0,0,0,.12);
+  --text:#111;
+  --muted:#666;
+  --accent:#2563eb;
+  --danger:#b91c1c;
+  --radius:16px;
+}
 
-      --accent: #3b82f6;
-      --accent2: #111827;
-      --danger: #b91c1c;
+*{box-sizing:border-box}
 
-      --radius: 16px;
-    }
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+}
 
-    * { box-sizing: border-box; }
+.widget{
+  height:500px;
+  padding:14px;
+}
 
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-    }
+.card{
+  height:100%;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
 
-    .widget {
-      height: 500px;
-      width: 100%;
-      padding: 14px;
-    }
+.topbar{
+  padding:14px 16px;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .card {
-      height: 100%;
-      background: linear-gradient(180deg, var(--card), var(--card2));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+.title h1{
+  margin:0;
+  font-size:14px;
+  font-weight:800;
+}
 
-    .topbar {
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(20,20,24,0.08);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+.title .sub{
+  font-size:12px;
+  color:var(--muted);
+}
 
-    .title h1 {
-      font-size: 14px;
-      margin: 0;
-      font-weight: 800;
-    }
+.toggle{
+  cursor:pointer;
+  font-size:13px;
+  font-weight:700;
+  padding:8px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#fff;
+}
 
-    .title .sub {
-      font-size: 12px;
-      color: var(--muted);
-    }
+.counter{
+  flex:1;
+  padding:18px 16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:10px;
+}
 
-    .toggle {
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      border: 1px solid rgba(20,20,24,0.14);
-      padding: 8px 12px;
-      border-radius: 12px;
-      background: #fff;
-    }
+.big{
+  font-size:56px;
+  font-weight:800;
+  letter-spacing:-0.04em;
+  font-variant-numeric:tabular-nums;
+}
 
-    .counter {
-      padding: 18px 16px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 10px;
-    }
+.pill{
+  display:inline-block;
+  padding:6px 10px;
+  font-size:12px;
+  color:var(--muted);
+  border:1px solid rgba(0,0,0,.1);
+  border-radius:999px;
+  margin-right:6px;
+}
 
-    .big {
-      font-size: 56px;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      font-variant-numeric: tabular-nums;
-    }
+.buttons{
+  padding:0 16px 16px;
+  display:flex;
+  gap:10px;
+}
 
-    .pill {
-      display: inline-block;
-      padding: 6px 10px;
-      font-size: 12px;
-      color: var(--muted);
-      border: 1px solid rgba(20,20,24,0.1);
-      border-radius: 999px;
-      margin-right: 6px;
-    }
+button{
+  border:none;
+  border-radius:12px;
+  padding:12px 14px;
+  font-weight:800;
+  font-size:14px;
+  cursor:pointer;
+}
 
-    .buttons {
-      padding: 0 16px 16px;
-      display: flex;
-      gap: 10px;
-    }
+button[disabled]{opacity:.45;cursor:not-allowed}
 
-    button {
-      border: none;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-weight: 800;
-      font-size: 14px;
-      cursor: pointer;
-    }
+.btn-start{background:var(--accent);color:#fff;flex:1}
+.btn-pause{background:#eee}
+.btn-reset{background:#fdecec;color:var(--danger)}
 
-    .btn-start { background: var(--accent); color: #fff; flex: 1; }
-    .btn-pause { background: #eee; }
-    .btn-reset { background: #fbeaea; color: var(--danger); }
+.settings{
+  border-top:1px solid rgba(0,0,0,.08);
+  background:#fff;
+  overflow:hidden;
+  max-height:0;                     /* hidden by default */
+  transition:max-height .25s ease;
+}
 
-    button[disabled] { opacity: 0.5; cursor: not-allowed; }
+.settings-inner{
+  padding:14px 16px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
 
-    .settings {
-      border-top: 1px solid rgba(20,20,24,0.08);
-      background: #fff;
-      overflow: hidden;
-      transition: max-height 0.25s ease;
-    }
+@media (max-width:520px){
+  .settings-inner{grid-template-columns:1fr}
+  .big{font-size:44px}
+}
 
-    .settings-inner {
-      padding: 14px 16px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+label{
+  font-size:12px;
+  color:var(--muted);
+  display:block;
+  margin-bottom:4px;
+}
 
-    @media (max-width: 520px){
-      .settings-inner { grid-template-columns: 1fr; }
-      .big { font-size: 44px; }
-    }
-
-    label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 4px;
-      display: block;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(20,20,24,0.14);
-      font-size: 14px;
-    }
-  </style>
+input,select{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  font-size:14px;
+}
+</style>
 </head>
 
 <body>
 <div class="widget">
   <div class="card">
+
     <div class="topbar">
       <div class="title">
         <h1>Möteskostnad</h1>
         <div class="sub">Kostnaden ökar var 5:e sekund</div>
       </div>
-      <div id="toggle" class="toggle">Inställningar</div>
+      <div id="settingsToggle" class="toggle">Inställningar</div>
     </div>
 
     <div class="counter">
-      <div style="font-size:12px;color:var(--muted);">Kostnad hittills</div>
+      <div style="font-size:12px;color:var(--muted)">Kostnad hittills</div>
       <div id="cost" class="big">0 kr</div>
       <div>
         <span class="pill">Tid: <span id="elapsed">00:00:00</span></span>
@@ -214,84 +207,77 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
 <script>
-  const COST_TICK_SECONDS = 5;
-  const TIME_TICK_SECONDS = 1;
+const COST_TICK_SECONDS = 5;
 
-  let running = false;
-  let startedAt = null;
-  let pausedAt = null;
-  let pausedMs = 0;
-  let timer, ticker;
+let startedAt=null, pausedAt=null, pausedMs=0;
+let timer=null, ticker=null;
 
-  const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-  function elapsedMs(now){
-    if (!startedAt) return 0;
-    return now - startedAt - pausedMs;
-  }
+function elapsedMs(now){
+  return startedAt ? now-startedAt-pausedMs : 0;
+}
 
-  function cost(now){
-    const step = COST_TICK_SECONDS * 1000;
-    const q = Math.floor(elapsedMs(now) / step) * step;
-    const hours = q / 36e5;
-    const people = Math.max(1, +$("people").value || 1);
-    const cph = +($("cph").value || $("defaultCph").value || 0);
-    return people * cph * hours;
-  }
+function meetingCost(now){
+  const step=COST_TICK_SECONDS*1000;
+  const quantised=Math.floor(elapsedMs(now)/step)*step;
+  const hours=quantised/36e5;
+  const people=Math.max(1,+$("people").value||1);
+  const cph=+($("cph").value||$("defaultCph").value||0);
+  return people*cph*hours;
+}
 
-  function render(){
-    const now = Date.now();
-    $("elapsed").textContent = new Date(elapsedMs(now)).toISOString().substr(11,8);
-    $("peopleOut").textContent = $("people").value;
-    $("cost").textContent = new Intl.NumberFormat("sv-SE", {
-      style: "currency",
-      currency: $("currency").value,
-      maximumFractionDigits: 0
-    }).format(cost(now));
-  }
+function render(){
+  const now=Date.now();
+  $("elapsed").textContent=new Date(elapsedMs(now)).toISOString().substr(11,8);
+  $("peopleOut").textContent=$("people").value;
+  $("cost").textContent=new Intl.NumberFormat("sv-SE",{
+    style:"currency",
+    currency:$("currency").value,
+    maximumFractionDigits:0
+  }).format(meetingCost(now));
+}
 
-  $("start").onclick = () => {
-    if (!startedAt) startedAt = Date.now();
-    if (pausedAt) pausedMs += Date.now() - pausedAt;
-    pausedAt = null;
-    running = true;
-    timer = setInterval(render, 1000);
-    ticker = setInterval(render, COST_TICK_SECONDS * 1000);
-    $("start").disabled = true;
-    $("pause").disabled = false;
-    $("reset").disabled = false;
-  };
+$("start").onclick=()=>{
+  if(!startedAt) startedAt=Date.now();
+  if(pausedAt) pausedMs+=Date.now()-pausedAt;
+  pausedAt=null;
+  timer=setInterval(render,1000);
+  ticker=setInterval(render,COST_TICK_SECONDS*1000);
+  $("start").disabled=true;
+  $("pause").disabled=false;
+  $("reset").disabled=false;
+};
 
-  $("pause").onclick = () => {
-    running = false;
-    pausedAt = Date.now();
-    clearInterval(timer);
-    clearInterval(ticker);
-    $("start").disabled = false;
-    $("pause").disabled = true;
-  };
+$("pause").onclick=()=>{
+  pausedAt=Date.now();
+  clearInterval(timer); clearInterval(ticker);
+  $("start").disabled=false;
+  $("pause").disabled=true;
+};
 
-  $("reset").onclick = () => {
-    running = false;
-    startedAt = pausedAt = pausedMs = 0;
-    clearInterval(timer);
-    clearInterval(ticker);
-    render();
-    $("start").disabled = false;
-    $("pause").disabled = true;
-    $("reset").disabled = true;
-  };
-
-  $("toggle").onclick = () => {
-    const s = $("settings");
-    s.style.maxHeight = s.style.maxHeight ? null : s.scrollHeight + "px";
-  };
-
+$("reset").onclick=()=>{
+  startedAt=pausedAt=pausedMs=0;
+  clearInterval(timer); clearInterval(ticker);
   render();
+  $("start").disabled=false;
+  $("pause").disabled=true;
+  $("reset").disabled=true;
+};
+
+$("settingsToggle").onclick=()=>{
+  const s=$("settings");
+  s.style.maxHeight = s.style.maxHeight && s.style.maxHeight!=="0px"
+    ? "0px"
+    : s.scrollHeight+"px";
+};
+
+render();
 </script>
 </body>
 </html>
