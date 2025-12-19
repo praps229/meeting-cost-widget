@@ -11,8 +11,10 @@
 
   <style>
     /* Prevent horizontal “jump” when scrollbars appear/disappear */
-    html { scrollbar-gutter: stable both-edges; }
 
+  html { overflow-y: scroll; scrollbar-gutter: stable; }
+  body { padding-right: calc(100vw - 100%); }
+    
     :root{
       --page-bg: #ffffff;
       --card: #ffffff;
