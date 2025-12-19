@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
+    /* Prevent horizontal “jump” when scrollbars appear/disappear */
+    html { scrollbar-gutter: stable both-edges; }
+
     :root{
       --page-bg: #ffffff;
       --card: #ffffff;
@@ -25,20 +28,7 @@
       --danger: #b91c1c;
 
       --radius: 16px;
-      html { scrollbar-gutter: stable both-edges; }
     }
-
-    .main{
-  flex: 1;
-  overflow: auto;
-  min-height: 0;
-}
-
-/* When space is tight, keep content top-aligned */
-.counter{
-  justify-content: flex-start;
-  padding-top: 24px;
-}
 
     *{ box-sizing: border-box; }
 
@@ -50,6 +40,7 @@
       background: var(--page-bg);
     }
 
+    /* Fixed embed height */
     .widget{
       height: 500px;
       width: 100%;
@@ -135,12 +126,19 @@
       margin-top: 2px;
     }
 
-    .counter{
+    /* Main content scroll container (prevents overlap and prevents width jump) */
+    .main{
       flex: 1;
-      padding: 18px 16px 10px;
+      overflow-y: scroll; /* always present, prevents layout shift */
+      overflow-x: hidden;
+      min-height: 0;
+      scrollbar-gutter: stable;
+    }
+
+    .counter{
+      padding: 24px 16px 10px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
       text-align: center;
       gap: 10px;
@@ -179,7 +177,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* People stepper (main view) */
+    /* People stepper (main view only) */
     .people-control{
       width: min(520px, 100%);
       display: flex;
@@ -374,30 +372,30 @@
       </div>
 
       <div class="main">
-      <div class="counter">
-        <div class="label">Kostnad hittills</div>
-        <p id="cost" class="big">0 kr</p>
+        <div class="counter">
+          <div class="label">Kostnad hittills</div>
+          <p id="cost" class="big">0 kr</p>
 
-        <div class="minirow">
-          <span class="pill">Tid: <span id="elapsed">00:00:00</span></span>
-        </div>
+          <div class="minirow">
+            <span class="pill">Tid: <span id="elapsed">00:00:00</span></span>
+          </div>
 
-        <div class="people-control" aria-label="Change number of people">
-          <div class="lbl">Antal personer</div>
-          <div class="stepper" role="group" aria-label="Antal personer">
-            <button id="peopleMinus" type="button" aria-label="Minska antal">−</button>
-            <input id="people" type="number" min="1" step="1" value="8" inputmode="numeric" aria-label="Antal personer">
-            <button id="peoplePlus" type="button" aria-label="Öka antal">+</button>
+          <div class="people-control" aria-label="Change number of people">
+            <div class="lbl">Antal personer</div>
+            <div class="stepper" role="group" aria-label="Antal personer">
+              <button id="peopleMinus" type="button" aria-label="Minska antal">−</button>
+              <input id="people" type="number" min="1" step="1" value="8" inputmode="numeric" aria-label="Antal personer">
+              <button id="peoplePlus" type="button" aria-label="Öka antal">+</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="buttons">
-        <button id="startBtn" class="btn btn-start" type="button">Starta</button>
-        <button id="pauseBtn" class="btn btn-pause" type="button" disabled>Pausa</button>
-        <button id="resetBtn" class="btn btn-reset" type="button" disabled>Nollställ</button>
-      </div>
+        <div class="buttons">
+          <button id="startBtn" class="btn btn-start" type="button">Starta</button>
+          <button id="pauseBtn" class="btn btn-pause" type="button" disabled>Pausa</button>
+          <button id="resetBtn" class="btn btn-reset" type="button" disabled>Nollställ</button>
         </div>
+      </div>
 
       <div id="settingsPanel" class="settings">
         <div class="settings-inner">
@@ -413,13 +411,13 @@
 
           <div>
             <label for="defaultCph">Standardkostnad per person och timme</label>
-            <input id="defaultCph" type="number" min="0" step="1" value="650" />
+            <input id="defaultCph" type="number" min="0" step="1" value="650">
             <div class="hint">Lön + LKP, ev overhead. Håll det konsekvent.</div>
           </div>
 
           <div style="grid-column: 1 / -1;">
             <label for="cph">Override (valfritt)</label>
-            <input id="cph" type="number" min="0" step="1" placeholder="Lämna tomt för standard" />
+            <input id="cph" type="number" min="0" step="1" placeholder="Lämna tomt för standard">
             <div class="hint">Används istället för standardkostnaden under detta möte.</div>
           </div>
         </div>
@@ -530,28 +528,26 @@
 
   function render(){
     const now = Date.now();
-    const people = getPeople();
     const currency = getCurrency();
-
     elElapsed.textContent = formatElapsed(effectiveElapsedMs(now));
     elCost.textContent = formatMoney(computeCost(now), currency);
   }
 
   function setUiState(){
-  btnStart.disabled = running;
-  btnPause.disabled = !running;
-  btnReset.disabled = !startedAt;
+    btnStart.disabled = running;
+    btnPause.disabled = !running;
+    btnReset.disabled = !startedAt;
 
-  // Lock people count while meeting is running
-  inpPeople.disabled = running;
-  btnMinus.disabled = running;
-  btnPlus.disabled = running;
+    // Lock people while running
+    inpPeople.disabled = running;
+    btnMinus.disabled = running;
+    btnPlus.disabled = running;
 
-  // Cost settings locked while running
-  inpCurrency.disabled = running;
-  inpCph.disabled = running;
-  inpDefaultCph.disabled = running;
-}
+    // Lock cost settings while running
+    inpCurrency.disabled = running;
+    inpCph.disabled = running;
+    inpDefaultCph.disabled = running;
+  }
 
   function start(){
     if (running) return;
