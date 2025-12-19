@@ -27,6 +27,18 @@
       --radius: 16px;
     }
 
+    .main{
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}
+
+/* When space is tight, keep content top-aligned */
+.counter{
+  justify-content: flex-start;
+  padding-top: 24px;
+}
+
     *{ box-sizing: border-box; }
 
     html, body{
@@ -360,13 +372,13 @@
         </div>
       </div>
 
+      <div class="main">
       <div class="counter">
         <div class="label">Kostnad hittills</div>
         <p id="cost" class="big">0 kr</p>
 
         <div class="minirow">
           <span class="pill">Tid: <span id="elapsed">00:00:00</span></span>
-          <span class="pill"><span id="peopleOut">8</span> personer</span>
         </div>
 
         <div class="people-control" aria-label="Change number of people">
@@ -384,6 +396,7 @@
         <button id="pauseBtn" class="btn btn-pause" type="button" disabled>Pausa</button>
         <button id="resetBtn" class="btn btn-reset" type="button" disabled>Nollställ</button>
       </div>
+        </div>
 
       <div id="settingsPanel" class="settings">
         <div class="settings-inner">
@@ -419,7 +432,6 @@
 
   const elCost = document.getElementById("cost");
   const elElapsed = document.getElementById("elapsed");
-  const elPeopleOut = document.getElementById("peopleOut");
 
   const inpPeople = document.getElementById("people");
   const inpCurrency = document.getElementById("currency");
@@ -520,7 +532,6 @@
     const people = getPeople();
     const currency = getCurrency();
 
-    elPeopleOut.textContent = people;
     elElapsed.textContent = formatElapsed(effectiveElapsedMs(now));
     elCost.textContent = formatMoney(computeCost(now), currency);
   }
