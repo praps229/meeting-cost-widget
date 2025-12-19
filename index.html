@@ -1,289 +1,555 @@
 <!doctype html>
 <html lang="sv">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Möteskostnad</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vad kostar ett möte?</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-<style>
-:root{
-  --card:#fff;
-  --border:rgba(0,0,0,.12);
-  --text:#111;
-  --muted:#666;
-  --accent:#2563eb;
-  --danger:#b91c1c;
-  --radius:16px;
-}
+  <style>
+    :root{
+      /* Neutral, Stacker-friendly */
+      --page-bg: #ffffff;                 /* ensures not transparent */
+      --card: #ffffff;
+      --card2: #fbfbfc;
+      --border: rgba(17, 24, 39, 0.14);
+      --border-soft: rgba(17, 24, 39, 0.10);
+      --text: rgba(17, 24, 39, 0.92);
+      --muted: rgba(17, 24, 39, 0.62);
+      --shadow: 0 10px 22px rgba(16, 24, 40, 0.08);
 
-*{box-sizing:border-box}
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --danger: #b91c1c;
 
-body{
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-}
+      --radius: 16px;
+    }
 
-.widget{
-  height:500px;
-  padding:14px;
-}
+    *{ box-sizing: border-box; }
 
-.card{
-  height:100%;
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
+    html, body{
+      height: 100%;
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: var(--page-bg); /* critical: forces white behind everything */
+    }
 
-.topbar{
-  padding:14px 16px;
-  border-bottom:1px solid rgba(0,0,0,.08);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+    /* Fixed embed height */
+    .widget{
+      height: 500px;
+      width: 100%;
+      padding: 14px;
+      background: var(--page-bg); /* critical: prevents “transparent” feel inside iframe */
+    }
 
-.title h1{
-  margin:0;
-  font-size:14px;
-  font-weight:800;
-}
+    .card{
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-.title .sub{
-  font-size:12px;
-  color:var(--muted);
-}
+    .topbar{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(17,24,39,0.08);
+      background: #fff;
+    }
 
-.toggle{
-  cursor:pointer;
-  font-size:13px;
-  font-weight:700;
-  padding:8px 12px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:#fff;
-}
+    .title{
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
 
-.counter{
-  flex:1;
-  padding:18px 16px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  gap:10px;
-}
+    .title h1{
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.big{
-  font-size:56px;
-  font-weight:800;
-  letter-spacing:-0.04em;
-  font-variant-numeric:tabular-nums;
-}
+    .title .sub{
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.pill{
-  display:inline-block;
-  padding:6px 10px;
-  font-size:12px;
-  color:var(--muted);
-  border:1px solid rgba(0,0,0,.1);
-  border-radius:999px;
-  margin-right:6px;
-}
+    .toggle{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(17,24,39,0.14);
+      background: #fff;
+      color: rgba(17,24,39,0.92);
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s ease;
+    }
+    .toggle:hover{ background: rgba(17,24,39,0.03); }
 
-.buttons{
-  padding:0 16px 16px;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-}
+    .chev{
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid rgba(17,24,39,0.65);
+      border-bottom: 2px solid rgba(17,24,39,0.65);
+      transform: rotate(45deg);
+      transition: transform 0.18s ease;
+      margin-top: -2px;
+    }
+    .toggle[aria-expanded="true"] .chev{
+      transform: rotate(225deg);
+      margin-top: 2px;
+    }
 
-button{
-  border:none;
-  border-radius:12px;
-  padding:12px 14px;
-  font-weight:800;
-  font-size:14px;
-  cursor:pointer;
-}
+    /* Counter area */
+    .counter{
+      flex: 1;
+      padding: 18px 16px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;   /* centred */
+      text-align: center;    /* centred */
+      gap: 10px;
+      min-height: 0;
+    }
 
-button[disabled]{opacity:.45;cursor:not-allowed}
+    .label{
+      font-size: 12px;
+      color: var(--muted);
+    }
 
-.btn-start{
-  background:var(--accent);
-  color:#fff;
-  min-width:160px;
-.btn-pause{background:#eee}
-.btn-reset{background:#fdecec;color:var(--danger)}
+    .big{
+      font-size: 56px;
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin: 0;
+      font-variant-numeric: tabular-nums;
+      word-break: break-word;
+    }
 
-.settings{
-  border-top:1px solid rgba(0,0,0,.08);
-  background:#ffffff;   /* <-- ensure pure white */
-  overflow:hidden;
-  max-height:0;
-  transition:max-height .25s ease;
-}
+    .minirow{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
 
-.settings-inner{
-  padding:14px 16px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
+    .pill{
+      border: 1px solid rgba(17,24,39,0.12);
+      background: rgba(17,24,39,0.03);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-variant-numeric: tabular-nums;
+    }
 
-@media (max-width:520px){
-  .settings-inner{grid-template-columns:1fr}
-  .big{font-size:44px}
-}
+    /* Buttons */
+    .buttons{
+      display: flex;
+      justify-content: center; /* centred */
+      gap: 10px;
+      padding: 0 16px 16px;
+      flex-wrap: wrap;
+    }
 
-label{
-  font-size:12px;
-  color:var(--muted);
-  display:block;
-  margin-bottom:4px;
-}
+    button{
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.04s ease, opacity 0.2s ease, background 0.15s ease;
+      min-width: 120px;
+    }
+    button:active{ transform: translateY(1px); }
+    button[disabled]{ opacity: 0.45; cursor: not-allowed; }
 
-input,select{
-  width:100%;
-  padding:10px 12px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  font-size:14px;
-}
-</style>
+    .btn-start{
+      background: var(--accent);
+      color: #fff;
+      min-width: 170px;
+    }
+    .btn-start:hover{ background: var(--accent-hover); }
+
+    .btn-pause{
+      background: rgba(17,24,39,0.06);
+      border: 1px solid rgba(17,24,39,0.12);
+      color: rgba(17,24,39,0.92);
+    }
+
+    .btn-reset{
+      background: rgba(185,28,28,0.07);
+      border: 1px solid rgba(185,28,28,0.20);
+      color: var(--danger);
+    }
+
+    /* Settings panel (hidden by default) */
+    .settings{
+      border-top: 1px solid rgba(17,24,39,0.08);
+      background: #ffffff;      /* explicit white */
+      overflow: hidden;
+      max-height: 0;            /* hidden by default */
+      transition: max-height 0.25s ease;
+    }
+
+    .settings-inner{
+      padding: 14px 16px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 560px){
+      .big{ font-size: 44px; }
+      .settings-inner{ grid-template-columns: 1fr; }
+      button{ min-width: 110px; }
+      .btn-start{ min-width: 100%; }
+    }
+
+    label{
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input, select{
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(17,24,39,0.14);
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    /* Make select look consistent */
+    select{
+      background-image:
+        linear-gradient(45deg, transparent 50%, rgba(17,24,39,0.55) 50%),
+        linear-gradient(135deg, rgba(17,24,39,0.55) 50%, transparent 50%);
+      background-position:
+        calc(100% - 18px) calc(50% - 2px),
+        calc(100% - 12px) calc(50% - 2px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 34px;
+    }
+
+    input:focus, select:focus{
+      border-color: rgba(37,99,235,0.55);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+    }
+
+    .hint{
+      margin-top: 6px;
+      font-size: 11px;
+      color: rgba(17,24,39,0.55);
+      line-height: 1.35;
+    }
+  </style>
 </head>
 
 <body>
-<div class="widget">
-  <div class="card">
-
-    <div class="topbar">
-      <div class="title">
-        <h1>Möteskostnad</h1>
-        <div class="sub">Kostnaden ökar var 5:e sekund</div>
-      </div>
-      <div id="settingsToggle" class="toggle">Inställningar</div>
-    </div>
-
-    <div class="counter">
-      <div style="font-size:12px;color:var(--muted)">Kostnad hittills</div>
-      <div id="cost" class="big">0 kr</div>
-      <div>
-        <span class="pill">Tid: <span id="elapsed">00:00:00</span></span>
-        <span class="pill"><span id="peopleOut">8</span> personer</span>
-      </div>
-    </div>
-
-    <div class="buttons">
-      <button id="start" class="btn-start">Starta</button>
-      <button id="pause" class="btn-pause" disabled>Pausa</button>
-      <button id="reset" class="btn-reset" disabled>Nollställ</button>
-    </div>
-
-    <div id="settings" class="settings">
-      <div class="settings-inner">
-        <div>
-          <label>Antal personer</label>
-          <input id="people" type="number" value="8" min="1">
+  <div class="widget">
+    <div class="card">
+      <div class="topbar">
+        <div class="title">
+          <h1>Möteskostnad</h1>
+          <div class="sub">Kostnaden ökar var 5:e sekund</div>
         </div>
-        <div>
-          <label>Valuta</label>
-          <select id="currency">
-            <option value="SEK">SEK</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="USD">USD</option>
-          </select>
-        </div>
-        <div>
-          <label>Standardkostnad / timme</label>
-          <input id="defaultCph" type="number" value="650">
-        </div>
-        <div>
-          <label>Override (valfritt)</label>
-          <input id="cph" type="number">
+
+        <div id="settingsToggle" class="toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="settingsPanel">
+          Inställningar <span class="chev" aria-hidden="true"></span>
         </div>
       </div>
-    </div>
 
+      <div class="counter">
+        <div class="label">Kostnad hittills</div>
+        <p id="cost" class="big">0 kr</p>
+
+        <div class="minirow">
+          <span class="pill">Tid: <span id="elapsed">00:00:00</span></span>
+          <span class="pill"><span id="peopleOut">8</span> personer</span>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button id="startBtn" class="btn-start">Starta</button>
+        <button id="pauseBtn" class="btn-pause" disabled>Pausa</button>
+        <button id="resetBtn" class="btn-reset" disabled>Nollställ</button>
+      </div>
+
+      <div id="settingsPanel" class="settings">
+        <div class="settings-inner">
+          <div>
+            <label for="people">Antal personer</label>
+            <input id="people" type="number" min="1" step="1" value="8" />
+          </div>
+
+          <div>
+            <label for="currency">Valuta</label>
+            <select id="currency">
+              <option value="SEK" selected>SEK (kr)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="USD">USD ($)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="defaultCph">Standardkostnad per person och timme</label>
+            <input id="defaultCph" type="number" min="0" step="1" value="650" />
+            <div class="hint">Lön + LKP, ev overhead. Håll det konsekvent.</div>
+          </div>
+
+          <div>
+            <label for="cph">Override (valfritt)</label>
+            <input id="cph" type="number" min="0" step="1" placeholder="Lämna tomt för standard" />
+            <div class="hint">Används istället för standardkostnaden under detta möte.</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
 <script>
-const COST_TICK_SECONDS = 5;
+  // Behaviour
+  const COST_TICK_SECONDS = 5;
+  const TIME_TICK_SECONDS = 1;
 
-let startedAt=null, pausedAt=null, pausedMs=0;
-let timer=null, ticker=null;
+  // Elements
+  const elCost = document.getElementById("cost");
+  const elElapsed = document.getElementById("elapsed");
+  const elPeopleOut = document.getElementById("peopleOut");
 
-const $=id=>document.getElementById(id);
+  const inpPeople = document.getElementById("people");
+  const inpCurrency = document.getElementById("currency");
+  const inpCph = document.getElementById("cph");
+  const inpDefaultCph = document.getElementById("defaultCph");
 
-function elapsedMs(now){
-  return startedAt ? now-startedAt-pausedMs : 0;
-}
+  const btnStart = document.getElementById("startBtn");
+  const btnPause = document.getElementById("pauseBtn");
+  const btnReset = document.getElementById("resetBtn");
 
-function meetingCost(now){
-  const step=COST_TICK_SECONDS*1000;
-  const quantised=Math.floor(elapsedMs(now)/step)*step;
-  const hours=quantised/36e5;
-  const people=Math.max(1,+$("people").value||1);
-  const cph=+($("cph").value||$("defaultCph").value||0);
-  return people*cph*hours;
-}
+  const toggle = document.getElementById("settingsToggle");
+  const panel = document.getElementById("settingsPanel");
 
-function render(){
-  const now=Date.now();
-  $("elapsed").textContent=new Date(elapsedMs(now)).toISOString().substr(11,8);
-  $("peopleOut").textContent=$("people").value;
-  $("cost").textContent=new Intl.NumberFormat("sv-SE",{
-    style:"currency",
-    currency:$("currency").value,
-    maximumFractionDigits:0
-  }).format(meetingCost(now));
-}
+  // State
+  let running = false;
+  let startedAt = null;    // ms
+  let pausedAt = null;     // ms
+  let totalPausedMs = 0;
 
-$("start").onclick=()=>{
-  if(!startedAt) startedAt=Date.now();
-  if(pausedAt) pausedMs+=Date.now()-pausedAt;
-  pausedAt=null;
-  timer=setInterval(render,1000);
-  ticker=setInterval(render,COST_TICK_SECONDS*1000);
-  $("start").disabled=true;
-  $("pause").disabled=false;
-  $("reset").disabled=false;
-};
+  let timeInterval = null;
+  let costInterval = null;
 
-$("pause").onclick=()=>{
-  pausedAt=Date.now();
-  clearInterval(timer); clearInterval(ticker);
-  $("start").disabled=false;
-  $("pause").disabled=true;
-};
+  function safeNumber(value, fallback){
+    const n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  }
 
-$("reset").onclick=()=>{
-  startedAt=pausedAt=pausedMs=0;
-  clearInterval(timer); clearInterval(ticker);
+  function getPeople(){
+    const p = safeNumber(inpPeople.value, 1);
+    return Math.max(1, Math.floor(p));
+  }
+
+  function getCurrency(){
+    return inpCurrency.value || "SEK";
+  }
+
+  function getCostPerPersonPerHour(){
+    const override = (inpCph.value || "").trim();
+    if (override !== ""){
+      return Math.max(0, safeNumber(override, 0));
+    }
+    return Math.max(0, safeNumber(inpDefaultCph.value, 0));
+  }
+
+  function pad2(n){ return String(n).padStart(2, "0"); }
+
+  function formatElapsed(ms){
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+  }
+
+  function effectiveElapsedMs(nowMs){
+    if (!startedAt) return 0;
+    return Math.max(0, nowMs - startedAt - totalPausedMs);
+  }
+
+  function computeCost(nowMs){
+    // Discrete steps (tick every 5 seconds)
+    const stepMs = COST_TICK_SECONDS * 1000;
+    const elapsed = effectiveElapsedMs(nowMs);
+    const quantisedMs = Math.floor(elapsed / stepMs) * stepMs;
+
+    const people = getPeople();
+    const cph = getCostPerPersonPerHour();
+    const hours = quantisedMs / (1000 * 60 * 60);
+
+    return people * cph * hours;
+  }
+
+  function formatMoney(amount, currency){
+    // Swedish style
+    try{
+      return new Intl.NumberFormat("sv-SE", {
+        style: "currency",
+        currency,
+        maximumFractionDigits: 0
+      }).format(amount);
+    } catch {
+      return `${new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 }).format(amount)} ${currency}`;
+    }
+  }
+
+  function render(){
+    const now = Date.now();
+    const people = getPeople();
+    const currency = getCurrency();
+
+    elPeopleOut.textContent = people;
+    elElapsed.textContent = formatElapsed(effectiveElapsedMs(now));
+    elCost.textContent = formatMoney(computeCost(now), currency);
+  }
+
+  function setUiState(){
+    btnStart.disabled = running;
+    btnPause.disabled = !running;
+    btnReset.disabled = !startedAt;
+
+    inpPeople.disabled = running;
+    inpCurrency.disabled = running;
+    inpCph.disabled = running;
+    inpDefaultCph.disabled = running;
+  }
+
+  function start(){
+    if (running) return;
+
+    const now = Date.now();
+    if (!startedAt){
+      startedAt = now;
+      totalPausedMs = 0;
+    } else if (pausedAt){
+      totalPausedMs += (now - pausedAt);
+    }
+
+    pausedAt = null;
+    running = true;
+
+    timeInterval = setInterval(render, TIME_TICK_SECONDS * 1000);
+    costInterval = setInterval(render, COST_TICK_SECONDS * 1000);
+
+    render();
+    setUiState();
+  }
+
+  function pause(){
+    if (!running) return;
+
+    running = false;
+    pausedAt = Date.now();
+
+    clearInterval(timeInterval);
+    clearInterval(costInterval);
+    timeInterval = null;
+    costInterval = null;
+
+    render();
+    setUiState();
+  }
+
+  function reset(){
+    running = false;
+    startedAt = null;
+    pausedAt = null;
+    totalPausedMs = 0;
+
+    clearInterval(timeInterval);
+    clearInterval(costInterval);
+    timeInterval = null;
+    costInterval = null;
+
+    render();
+    setUiState();
+  }
+
+  // Settings panel toggle (hidden by default)
+  function setPanel(open){
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    panel.style.maxHeight = open ? (panel.scrollHeight + "px") : "0px";
+  }
+
+  function togglePanel(){
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    setPanel(!isOpen);
+  }
+
+  toggle.addEventListener("click", togglePanel);
+  toggle.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      togglePanel();
+    }
+  });
+
+  btnStart.addEventListener("click", start);
+  btnPause.addEventListener("click", pause);
+  btnReset.addEventListener("click", reset);
+
+  // Update view when not running
+  ["input", "change"].forEach(evt => {
+    [inpPeople, inpCurrency, inpCph, inpDefaultCph].forEach(el => {
+      el.addEventListener(evt, () => { if (!running) render(); });
+    });
+  });
+
+  // Initial
+  setPanel(false);  // hidden by default
   render();
-  $("start").disabled=false;
-  $("pause").disabled=true;
-  $("reset").disabled=true;
-};
+  setUiState();
 
-$("settingsToggle").onclick=()=>{
-  const s=$("settings");
-  s.style.maxHeight = s.style.maxHeight && s.style.maxHeight!=="0px"
-    ? "0px"
-    : s.scrollHeight+"px";
-};
-
-render();
+  // Keep panel animation correct if user opens it then resizes
+  window.addEventListener("resize", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    if (isOpen) setPanel(true);
+  });
 </script>
 </body>
 </html>
