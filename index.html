@@ -122,7 +122,6 @@
       margin-top: 2px;
     }
 
-    /* Counter area */
     .counter{
       flex: 1;
       padding: 18px 16px 10px;
@@ -167,7 +166,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* People stepper (always visible) */
+    /* People stepper (main view) */
     .people-control{
       width: min(520px, 100%);
       display: flex;
@@ -269,7 +268,7 @@
       color: var(--danger);
     }
 
-    /* Settings panel */
+    /* Settings panel (currency + costs only) */
     .settings{
       border-top: 1px solid rgba(17,24,39,0.08);
       background: #ffffff;
@@ -337,15 +336,13 @@
       line-height: 1.35;
     }
 
-    /* Hide number input spinners in most browsers (cleaner stepper) */
+    /* Hide number spinners (cleaner) */
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button{
       -webkit-appearance: none;
       margin: 0;
     }
-    input[type="number"]{
-      -moz-appearance: textfield;
-    }
+    input[type="number"]{ -moz-appearance: textfield; }
   </style>
 </head>
 
@@ -374,7 +371,6 @@
 
         <div class="people-control" aria-label="Change number of people">
           <div class="lbl">Antal personer</div>
-
           <div class="stepper" role="group" aria-label="Antal personer">
             <button id="peopleMinus" type="button" aria-label="Minska antal">−</button>
             <input id="people" type="number" min="1" step="1" value="8" inputmode="numeric" aria-label="Antal personer">
@@ -530,20 +526,20 @@
   }
 
   function setUiState(){
-    btnStart.disabled = running;
-    btnPause.disabled = !running;
-    btnReset.disabled = !startedAt;
+  btnStart.disabled = running;
+  btnPause.disabled = !running;
+  btnReset.disabled = !startedAt;
 
-    // People can change anytime
-    inpPeople.disabled = false;
-    btnMinus.disabled = false;
-    btnPlus.disabled = false;
+  // Lock people count while meeting is running
+  inpPeople.disabled = running;
+  btnMinus.disabled = running;
+  btnPlus.disabled = running;
 
-    // Cost settings locked while running
-    inpCurrency.disabled = running;
-    inpCph.disabled = running;
-    inpDefaultCph.disabled = running;
-  }
+  // Cost settings locked while running
+  inpCurrency.disabled = running;
+  inpCph.disabled = running;
+  inpDefaultCph.disabled = running;
+}
 
   function start(){
     if (running) return;
@@ -606,18 +602,17 @@
     setPanel(!isOpen);
   }
 
-  // Stepper interactions
+  // Stepper
   btnMinus.addEventListener("click", () => setPeople(getPeople() - 1));
   btnPlus.addEventListener("click", () => setPeople(getPeople() + 1));
 
   inpPeople.addEventListener("input", () => {
-    // Keep it sane while typing
     if (inpPeople.value === "") return;
     setPeople(inpPeople.value);
   });
   inpPeople.addEventListener("blur", () => setPeople(inpPeople.value));
 
-  // Controls + settings
+  // Toggle + controls
   toggle.addEventListener("click", togglePanel);
   toggle.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -636,7 +631,7 @@
     });
   });
 
-  // Initial
+  // Init
   setPanel(false);
   render();
   setUiState();
